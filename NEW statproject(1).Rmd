@@ -1,0 +1,227 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+library(readr)
+mydata <- read_csv("Nutrition__Physical_Activity__and_Obesity_-_Behavioral_Risk_Factor_Surveillance_System.csv")
+#import dataset
+
+```
+```{r}
+head(mydata)
+names(mydata)
+
+```
+```{r}
+mydata2=mydata[,c(1,4,8,11,20,30)] # select the data that I want
+mydata2
+names(mydata2)
+```
+```{r}
+mydata3=which(mydata2[,6]=="Education") #we are interested in Education,just select education from stratificaitonCategory1
+data1=mydata2[mydata3,]#combine the data into our data set 
+head(data1)
+names(data1)
+```
+```{r}
+data2=which(data1[,3]=="Percent of adults aged 18 years and older who have obesity")#choose our question 
+
+question=data1[data2,] 
+head(question) # select our question 
+
+```
+
+```{r}
+table(question$LocationDesc)
+data3=which(question[,2]!="National") #remove national
+data_location=question[data3,]
+data_location
+data4=which(data_location[,2]!="Guma")#remove Guma 
+data_location2=data_location[data4,]
+data_location2
+data5=which(data_location2[,2]!="Puerto Rico") #remove Puerto Rico 
+finaldata=data_location2[data5,]
+
+finaldata
+```
+
+```{r}
+#datavisulaization 
+
+data11=which(finaldata[,1]=="2011") #choose year 2011 data 
+data2011=finaldata[data11,]
+data2011=data2011[,c(2,4,5)] # choose relevant data 
+data2011
+
+data_edu=which(data2011[,3]=="College graduate") # choose college graduate
+data_college=data2011[data_edu,]
+data_college
+```
+# 2012 year 
+```{r}
+data12=which(finaldata[,1]=="2012")
+data2012=finaldata[data12,]
+data2012=data2012[,c(2,4,5)]
+data_edu12012=which(data2012[,3]=="College graduate")
+data_college2012=data2012[data_edu12012,]
+data_college2012
+```
+```{r}
+#2013
+data13=which(finaldata[,1]=="2013")
+data2013=finaldata[data13,]
+data2013=data2013[,c(2,4,5)]
+data2013
+data_edu2013=which(data2013[,3]=="College graduate")
+data_college2013=data2013[data_edu2013,]
+data_college2013
+
+
+```
+```{r}
+#2014
+data14=which(finaldata[,1]=="2014")
+data2014=finaldata[data14,]
+data2014=data2014[,c(2,4,5)]
+data2014
+data_edu2014=which(data2014[,3]=="College graduate")
+data_college2014=data2014[data_edu2014,]
+data_college2014
+```
+```{r}
+#2015
+data15=which(finaldata[,1]=="2015")
+data2015=finaldata[data15,]
+data2015=data2015[,c(2,4,5)]
+data2015
+data_edu2015=which(data2015[,3]=="College graduate")
+data_college2015=data2015[data_edu2015,]
+data_college2015
+```
+```{r}
+#2016
+data16=which(finaldata[,1]=="2016")
+data2016=finaldata[data16,]
+data2016=data2016[,c(2,4,5)]
+data2016
+data_edu2016=which(data2016[,3]=="College graduate")
+data_college2016=data2016[data_edu2016,]
+data_college2016
+```
+```{r}
+#college graduate & BMI
+library(ggplot2)
+F_2011=ggplot(data_college,mapping=aes(x=Data_Value,y=LocationDesc))+geom_bar(stat = "identity",color="black") #data visualization 
+F_2011+ggtitle("2011")+xlab("College$BMI")
+
+F_2012=ggplot(data_college2012,mapping = aes(x=Data_Value,y=LocationDesc))+geom_bar(stat="identity",color="black")
+F_2012+ggtitle("2012")+xlab("College$BMI")
+
+F_2013=ggplot(data_college2013,mapping=aes(x=Data_Value,y=LocationDesc))+geom_bar(stat = "identity",color="black")
+F_2013+ggtitle("2013")+xlab("College$BMI")
+
+F_2014=ggplot(data_college2014,mapping=aes(x=Data_Value,y=LocationDesc))+geom_bar(stat = "identity",color="black")
+F_2014+ggtitle("2014")+xlab("College$BMI")
+
+F_2015=ggplot(data_college2015,mapping=aes(x=Data_Value,y=LocationDesc))+geom_bar(stat = "identity",color="black")
+F_2015+ggtitle("2015")+xlab("College$BMI")
+
+F_2016=ggplot(data_college2016,mapping=aes(x=Data_Value,y=LocationDesc))+geom_bar(stat = "identity",color="black")
+F_2016+ggtitle("2016")+xlab("College$BMI")
+
+
+
+
+
+```
+
+
+
+```{r}
+install.packages("ggpubr")
+library("ggpubr")
+```
+
+```{r}
+par(mfrow=c(1,2))
+ggdensity(finaldata$Data_Value,xlab = "Obesity rate",main="Density plot of obesity rate") #test normality 
+ggqqplot(finaldata$Data_Value)
+shapiro.test(finaldata$Data_Value) # our data is normally distributed 
+```
+
+```{r}
+# high school or lower high school degree=0, otherwise =1
+
+table(finaldata$Education)
+
+Less_High=which(finaldata$Education=='Less than high school') #choose less than high school graduate and equal 0
+finaldata$Education[Less_High]=0
+
+High=which(finaldata$Education=='High school graduate')
+finaldata$Education[High]=0
+
+
+College_Tech=which(finaldata$Education=='Some college or technical school')
+finaldata$Education[College_Tech]=1
+
+Collge_graduate=which(finaldata$Education=='College graduate')
+finaldata$Education[Collge_graduate]=1
+
+finaldata
+finaldata$Education=as.numeric(finaldata$Education) #convert string to numeric 
+typeof(finaldata$Education) 
+```
+
+```{r}
+
+par(mfrow=c(1,2))
+hist(finaldata$Data_Value,xlab = "BMI",main="Histogram of BMI")
+boxplot(finaldata$Data_Value~finaldata$Education,xlab = "Education Level",ylab = "BMI")
+boxplot(finaldata$Data_Value~finaldata$YearStart,xlab="Years",ylab="BMI")
+
+```
+```{r}
+# BMI <25 =0, BMI>25=1
+finaldata$Data_Value[finaldata$Data_Value<=25]<-0
+finaldata$Data_Value[finaldata$Data_Value>25]<-1
+finaldata
+```
+
+```{r}
+#Rregression 
+
+fit_lm=glm((finaldata$Data_Value)~finaldata$YearStart+finaldata$Education,family=binomial()) # Logistic model 
+summary(fit_lm)
+anova(fit_lm)
+
+coef(fit_lm)
+
+```
+
+```{r}
+#test VIF
+install.packages("MPV")
+install.packages("car")
+library("car")
+library("MPV")
+vif(fit_lm)
+```
+```{r}
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
